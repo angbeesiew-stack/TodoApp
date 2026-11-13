@@ -6,7 +6,7 @@ Reference : https://ai-sdlc-workshop-day1-production.up.railway.app/login
 
 ## Current App and Local Checks
 
-The runnable app currently covers PRPs 01–04 (todo CRUD, priority, recurrence, and reminders) with passkey authentication. PRPs 05–10 remain documented plans.
+The current working tree contains implementations for PRPs 01–08 (todo CRUD, priority, recurrence, reminders, subtasks, tags, templates, and search/filtering) plus the passkey/session foundation. PRPs 09–10 remain planned work; PRP 11's full authentication acceptance is not yet verified. Implementation presence does not mean every acceptance criterion has passed. See [the implementation handoff](PRPs/AI-HANDOFF-05-11.md) for reported validation and pending checks.
 
 1. Install dependencies with `npm install`.
 2. Copy `.env.example` to `.env.local` and set `SESSION_SECRET` to a random secret of at least 32 characters. For a deployed passkey origin, configure `RP_ID` and `RP_ORIGIN` to match it.

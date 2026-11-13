@@ -1,5 +1,7 @@
 # Todo App - Comprehensive User Guide
 
+> **Status:** This guide describes app behavior, not a PRP acceptance report. Implementations for PRPs 01–08 are present in the current working tree, but some validation and review items remain open. See [the implementation handoff](PRPs/AI-HANDOFF-05-11.md) for reported checks and pending work.
+
 ## Table of Contents
 1. [Authentication](#1-authentication)
 2. [Creating Todos](#2-creating-todos)
@@ -233,14 +235,15 @@ Break down complex todos into smaller, manageable subtasks with real-time progre
 
 #### Visual Progress Bar
 - Shows completion percentage (0-100%)
-- Blue progress bar updates in real-time
+- Blue below 100%; green at 100%
 - Located below todo title
 - Visible even when subtasks are collapsed
+- Hidden when a todo has no subtasks
 
 #### Text Indicator
 - Format: `"X/Y subtasks"`
 - Shows completed count / total count
-- Example: `"3/7 subtasks"` = 42% complete
+- Example: `"3/7 subtasks"` = 43% complete (rounded)
 
 ### Features
 - ✅ Unlimited subtasks per todo
@@ -248,6 +251,7 @@ Break down complex todos into smaller, manageable subtasks with real-time progre
 - ✅ Included in search functionality
 - ✅ CASCADE delete (all subtasks removed when parent deleted)
 - ✅ Independent completion (subtask completion doesn't affect parent)
+- ✅ Completing all subtasks does not complete the parent todo
 - ✅ Real-time progress updates
 
 ### Use Cases
@@ -271,7 +275,7 @@ Organize todos with custom color-coded labels for better categorization and filt
 1. Click **"+ Manage Tags"** button (near todo form)
 2. In the modal:
    - Enter tag name in text field
-   - Select color using color picker or enter hex code
+   - Select a color using the picker or edit its hex value
    - Click **"Create Tag"**
 3. Tag appears in your tag list immediately
 
@@ -314,10 +318,11 @@ Organize todos with custom color-coded labels for better categorization and filt
 2. Select a tag to show only todos with that tag
 3. Tag filter combines with other filters (search, priority, dates)
 4. Select "All Tags" to clear tag filter
+5. Click a tag pill on a todo card to filter by that tag
 
 ### Visual Display
 - Tags appear as **colored pills** on todos
-- Tag names in **white text** on colored background
+- Tag names in **white text** on colored background; choose a color with enough contrast for readability
 - Rounded full shape for visual appeal
 - Positioned after priority and recurrence badges
 - Visible in all sections (Overdue, Pending, Completed)
@@ -333,7 +338,7 @@ Organize todos with custom color-coded labels for better categorization and filt
 ### Tag Management Modal
 - **Default color**: `#3B82F6` (blue)
 - **Color picker**: Standard HTML color input
-- **Hex input**: Manual entry supported
+- **Hex input**: Manual entry supported alongside the picker
 - **Tag list**: Shows all your tags with actions
 - **Dark mode**: Fully supported
 
@@ -352,13 +357,17 @@ Save frequently used todo patterns as reusable templates for instant creation of
    - Priority
    - Recurrence settings (if applicable)
    - Reminder timing (if applicable)
+   - Subtasks to include in the saved checklist (if any)
 2. Click **"💾 Save as Template"** button (appears when title is filled)
 3. Enter template details in modal:
    - **Name**: Template identifier (required)
    - **Description**: Purpose/details (optional)
    - **Category**: Group similar templates (optional)
+   - **Due date offset**: Optional number of minutes from when the template is used
 4. Click **"Save Template"**
 5. Template saved to your library
+
+Recurring templates require a due date offset. Each use creates a new todo and fresh, unchecked subtasks; the template is a snapshot, so later template edits do not change todos already created from it.
 
 ### Using Templates
 
@@ -410,13 +419,14 @@ Templates preserve:
 - ✅ Recurrence settings (enabled/disabled)
 - ✅ Recurrence pattern (daily/weekly/monthly/yearly)
 - ✅ Reminder timing (minutes before due)
+- ✅ Subtask checklist items
+- ✅ Subtasks are recreated unchecked each time the template is used
 - ✅ Category information
 - ✅ Description
 
 **Note**: Templates do NOT include:
 - ❌ Specific due dates (you set when creating)
 - ❌ Tags (selected when creating from template)
-- ❌ Subtasks (added after creation)
 
 ### Template Categories
 
@@ -468,10 +478,10 @@ Powerful search and filtering system to find exactly the todos you need with mul
 
 #### How It Works
 - **Searches**: Todo titles AND subtask titles
-- **Real-time**: Results update as you type
+- **Debounced**: Results update after a brief pause in typing (300ms)
 - **Case-insensitive**: Finds "meeting" or "Meeting"
 - **Partial match**: "proj" finds "project" and "projection"
-- **Clear**: Click ✕ or delete all text
+- **Clear**: Click ✕ to clear immediately, or delete all text
 
 #### Search Behavior
 ```
@@ -1365,8 +1375,8 @@ Accents:
 ### Accessibility
 
 #### Contrast Ratios
-- Text meets WCAG AA standards
-- Badges and tags readable in both modes
+- Built-in text and controls use the app's light/dark theme
+- Custom tag colors are user-selected and are not automatically contrast-checked; choose colors that keep the white label text readable
 - Focus states visible
 - Hover states distinct
 

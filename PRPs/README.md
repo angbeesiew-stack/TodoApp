@@ -4,7 +4,7 @@ This directory contains detailed Product Requirement Prompts split by feature fo
 
 ## Implementation Handoff
 
-PRPs 01–04 are implemented in the current working tree. For the verified baseline, shared-worktree cautions, dependencies, validation commands, and guidance for taking over PRPs 05–11, read [AI-HANDOFF-05-11.md](AI-HANDOFF-05-11.md). Re-run its checks before relying on prior results.
+Implementations for PRPs 01–08 are present in the current working tree; this does not mean every acceptance criterion is verified. For owner-reported test results, open review items, shared-worktree cautions, and guidance for PRPs 09–11, read [AI-HANDOFF-05-11.md](AI-HANDOFF-05-11.md). Re-run checks before relying on prior results.
 
 ## 📋 PRP Files
 
@@ -57,8 +57,8 @@ PRPs 01–04 are implemented in the current working tree. For the verified basel
 ### Productivity Features
 
 8. **[08-search-filtering.md](08-search-filtering.md)** - Search & Filtering
-   - Real-time text search
-   - Advanced search (title + tags)
+   - 300 ms debounced text search
+   - Search across todo and subtask titles
    - Multi-criteria filtering
    - Client-side performance
 
@@ -154,13 +154,11 @@ Authentication/session (11) → Protected APIs (session must exist before secure
 
 Recommended order based on dependencies and the current baseline:
 
-1. **Baseline complete** — 01: Todo CRUD, 02: Priority, 03: Recurrence, 04: Reminders. Verify the current tree before building on it.
+1. **Implemented in the current tree** — 01: Todo CRUD, 02: Priority, 03: Recurrence, 04: Reminders, 05: Subtasks, 06: Tags, 07: Templates, 08: Search & Filtering. Check the handoff for reported validation and open items before treating the baseline as fully accepted.
 
-2. **Core extension** — 05: Subtasks and 06: Tags. Both depend on 01 and touch shared database/UI files; coordinate ownership or implement serially.
+2. **Remaining productivity feature** — 09: Export & Import (after 05 and 06).
 
-3. **Dependent productivity features** — 07: Templates (after 05); 08: Search & Filtering (after 05 and 06); 09: Export & Import (after 05 and 06).
-
-4. **Calendar and auth acceptance** — 10: Calendar (after 01–02 and session availability); verify PRP 11 authentication acceptance flows. The auth/session foundation exists, but do not assume the PRP's full test criteria have passed.
+3. **Calendar and auth acceptance** — 10: Calendar (after 01–02 and session availability); verify PRP 11 authentication acceptance flows. The auth/session foundation exists, but do not assume the PRP's full test criteria have passed.
 
 See [AI-HANDOFF-05-11.md](AI-HANDOFF-05-11.md) for feature-level cautions and documentation conflicts.
 

@@ -1,11 +1,19 @@
-# AI Handoff: Work After PRPs 01–04
+# AI Handoff: Work After PRPs 01–08
 
 **Status checked:** 2026-11-13  
-**Purpose:** Give the next implementation team a reliable starting point after Todo CRUD, priority, recurrence, and reminders.
+**Purpose:** Give the next implementation team a reliable starting point after the first eight PRPs.
 
 ## Current baseline
 
-PRPs 01–04 have been implemented in the shared working tree. On 2026-11-13, the current tree passed 32 unit/API tests, all 4 Playwright flows, typecheck, lint, coverage, and the production build. Coverage was 95.2% statements, 85.96% branches, 96.15% functions, and 95.37% lines. Re-run the checks after changes; Next.js currently warns that `middleware.ts` is deprecated in favor of `proxy.ts`.
+Implementations for PRPs 01–08 are present in the shared working tree. The following are owner-reported results from 2026-11-13, not checks rerun during this documentation update:
+
+- Jo reported 44 unit/API tests passing, the initial PRP 05–08 browser flows passing, and typecheck, lint, and production build passing. Mich later independently confirmed typecheck, lint, and build passed; Next.js emitted a `middleware.ts` deprecation warning.
+- Roy's added integration regressions passed 3/3.
+- JY's expanded PRP 05–08 Playwright specs passed 7/7; the new spec also passed lint.
+- YY later reported independently passing 60/60 unit/API tests, 11/11 full E2E tests, lint, typecheck, and production build. The earlier recurring-todo checkbox failure did not recur. E2E workers are limited to one because the suite shares a SQLite test database.
+- YY's added unit-boundary suite passed 13/13, and its targeted ESLint run passed. It covers progress endpoints, strict AND filtering, absent relations and dates, preset storage failures, 1,000-item filter performance, and template offset/serialization boundaries. A debounce-hook timing test was omitted because the project has no established React hook test harness.
+
+These results do not establish that every PRP acceptance criterion has passed. Re-run the relevant checks against the current tree before relying on this snapshot.
 
 The app is a Next.js 16 App Router project using React 19, Tailwind CSS 4, synchronous `better-sqlite3`, WebAuthn sessions, and Singapore-time date handling. Useful current files:
 
@@ -15,9 +23,21 @@ The app is a Next.js 16 App Router project using React 19, Tailwind CSS 4, synch
 - `app/api/auth/` and `lib/auth.ts` — passkey/session foundation
 - `lib/db.ts` — SQLite schema and shared data access
 - `lib/todos.ts`, `lib/recurrence.ts`, `lib/reminders.ts`, `lib/timezone.ts`, `lib/validation.ts` — core logic
+- `lib/subtasks.ts`, `lib/templates.ts`, `lib/filters.ts`, `lib/filter-presets.ts` — PRPs 05–08 behavior
 - `tests/unit/`, `tests/integration/`, `tests/e2e/` — existing coverage
 
-The database already creates `subtasks`, `tags`, and `todo_tags` tables, and todo types include optional subtask/tag relations. This is scaffolding, not proof that PRPs 05–06 are complete: there are no subtask API routes or tag-management routes in the current route tree. The existing `subtasks` and `tags` schemas omit `created_at` fields present in PRP 05/06; reconcile that difference with a migration rather than creating duplicate tables. `tagDB` currently provides todo-association helpers used by recurrence, not full tag CRUD.
+PRPs 05–08 include scoped subtask/tag/template API routes, database access and migrations, UI flows, search/filter logic, and browser-local filter presets. Templates recreate subtasks but intentionally do not copy tags or concrete due dates. The user guide now follows this template behavior.
+
+## Technical sign-off status: not signed off
+
+I inspected the current shared-tree code for the review items below. These concerns remain visible in the current source, so PRPs 05–08 are implemented but not ready for technical sign-off:
+
+- `app/page.tsx`, `handleToggleSubtask`: an older request response or rollback can still overwrite a newer toggle. Add ordering protection or serialize toggles and test out-of-order success/failure.
+- `app/page.tsx` and `app/globals.css`: custom tag colors still render with fixed white text. Some valid light colors fail WCAG contrast; calculate a contrasting foreground or constrain the selectable colors, and test it.
+- `app/api/templates/route.ts` and `app/api/templates/[id]/use/route.ts`: template text and subtask counts have no explicit upper bounds, and use performs a synchronous insert per serialized subtask. Define a request/resource policy or document an explicit product decision accepting this risk. PRP 05 currently states unlimited subtasks.
+- YY measured the PRP 08 1,000-todo filter target under 100ms in the added boundary suite. The 300ms debounce behavior still lacks a dedicated hook-timing test; YY omitted it because no established hook-test harness exists.
+
+YY also reported that full E2E validation now passes 11/11; the suite status is no longer pending. No code changes or fixes are claimed here. The implementation owner should address or explicitly accept the three remaining risks before technical sign-off. YY owns the final independent sign-off after that disposition is recorded.
 
 ## Safe takeover procedure
 
@@ -32,15 +52,11 @@ Use the configured environment in `.env.example`; `SESSION_SECRET` must be set i
 
 | PRP | Scope | Depends on / handoff notes |
 |---|---|---|
-| 05 | Subtask CRUD, ordering, independent completion, progress display | PRP 01. Use the existing `subtasks` table; verify parent ownership on every subtask mutation and preserve cascade deletion. |
-| 06 | User-owned tag CRUD, todo assignment, color pills | PRP 01. Reuse existing `tags`/`todo_tags` schema and data-access methods where they match the PRP; add the missing management/assignment API and UI. |
-| 07 | Reusable todo templates | PRPs 01–05, with priority/recurrence/reminder fields from 02–04. PRP 07 is authoritative: templates serialize and recreate subtasks, but exclude tags and concrete due dates. Reject recurring templates without a due-date offset so using a template cannot create an invalid recurring todo. |
-| 08 | Text search, combined filters, saved local presets | PRPs 01, 05, 06. Search titles and subtask titles; all filter dimensions combine with AND. Presets are browser-local, not synced. |
 | 09 | JSON backup/restore and one-way CSV export | PRPs 01, 05, 06. JSON includes subtasks, tags, and associations; import generates new IDs, reuses same-user tags case-insensitively, and is transactional. CSV is not importable. |
 | 10 | Monthly calendar and Singapore holidays | PRPs 01–02 plus a valid session. Calendar is unfiltered regardless of list filters; use Singapore-local dates and a fixed 42-cell grid. |
 | 11 | Passkey authentication acceptance verification / remaining auth gaps | Auth/session code already exists and protects current APIs, but registration/login E2E was not confirmed in the latest review. Verify PRP 11 flows before treating auth as fully accepted. |
 
-PRPs 05 and 06 are independently specified but share `lib/db.ts` and `app/page.tsx`; implement sequentially or agree on file/API ownership before parallel work. PRPs 07–09 also touch the main page and shared database layer, so integrate one feature at a time and keep API/data contracts consistent.
+PRPs 09–10 also touch shared data and UI; integrate one feature at a time and keep API/data contracts consistent.
 
 ## Project conventions and validation
 
@@ -75,9 +91,8 @@ Browser/OS notification delivery is not fully covered by Playwright and still ne
 
 ## Documentation decisions for implementers
 
-Several existing user-facing descriptions conflict with the detailed feature contracts. Follow the PRPs for implementation and update `USER_GUIDE.md` when the related feature is verified:
+The PRP 07 template behavior is authoritative: templates save and recreate subtasks, but do not copy tags or concrete due dates. `USER_GUIDE.md` §9 now reflects this. Other known documentation conflicts outside PRPs 05–08 remain for their owners to address:
 
-- PRP 07 includes subtasks in templates; `USER_GUIDE.md` §9 currently says subtasks are added afterward.
 - PRP 09 includes subtasks and tag associations in JSON export/import; `USER_GUIDE.md` §11 currently says they are excluded.
 - PRP 10 explicitly keeps calendar results independent of list filters; `USER_GUIDE.md` §12 currently says calendar respects active filters.
 - The PRP index previously suggested authentication can be last. The session primitive must exist before protected feature APIs can work; here the auth foundation is already present, but its acceptance tests still need confirmation.
