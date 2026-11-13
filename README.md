@@ -4,6 +4,15 @@ This walkthrough will guide you from zero to running the Todo App with GitHub Co
 
 Reference : https://ai-sdlc-workshop-day1-production.up.railway.app/login
 
+## Current App and Local Checks
+
+The runnable app currently covers PRPs 01–04 (todo CRUD, priority, recurrence, and reminders) with passkey authentication. PRPs 05–10 remain documented plans.
+
+1. Install dependencies with `npm install`.
+2. Copy `.env.example` to `.env.local` and set `SESSION_SECRET` to a random secret of at least 32 characters. For a deployed passkey origin, configure `RP_ID` and `RP_ORIGIN` to match it.
+3. Run `npm run dev`, then open `http://localhost:3000`.
+4. Run `npm test`, `npm run test:coverage`, and `npm run test:e2e` for unit/API coverage and browser flows. Playwright may need Chromium installed with `npx playwright install chromium`.
+
 ---
 
 ## Table of Contents
@@ -200,6 +209,10 @@ You should see output like:
 ```
 added 345 packages, and audited 346 packages in 45s
 ```
+
+### Configure Passkey Authentication
+
+Copy `.env.example` to `.env.local` and set `SESSION_SECRET` to a random value of at least 32 characters. For local development, set `RP_ID=localhost` and `RP_ORIGIN=http://localhost:3000`; production deployments must use the exact public hostname and HTTPS origin. The SQLite database is created as `todos.db` in the project root unless `TODO_DB_PATH` is set.
 
 ### Project Structure Verification
 Ensure you have these key files:

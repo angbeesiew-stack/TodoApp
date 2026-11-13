@@ -2,6 +2,10 @@
 
 This directory contains detailed Product Requirement Prompts split by feature for the Todo App. Each PRP provides comprehensive guidance for implementing a specific feature using AI coding assistants.
 
+## Implementation Handoff
+
+PRPs 01–04 are implemented in the current working tree. For the verified baseline, shared-worktree cautions, dependencies, validation commands, and guidance for taking over PRPs 05–11, read [AI-HANDOFF-05-11.md](AI-HANDOFF-05-11.md). Re-run its checks before relying on prior results.
+
 ## 📋 PRP Files
 
 ### Core Features
@@ -143,33 +147,22 @@ Todo CRUD (01) → Priority (02), Recurring (03), Subtasks (05), Tags (06)
 Tags (06) → Search/Filtering (08)
 Subtasks (05) → Templates (07)
 Todos (01) → Export/Import (09), Calendar (10)
-Authentication (11) → All features (require session for production, but can be added last)
+Authentication/session (11) → Protected APIs (session must exist before secured feature routes ship)
 ```
 
-## 📊 Implementation Priority
+## 📊 Suggested Implementation Order
 
-Recommended implementation order:
+Recommended order based on dependencies and the current baseline:
 
-1. **Phase 1 - Foundation**
-   - 01: Todo CRUD
-   - 02: Priority System
+1. **Baseline complete** — 01: Todo CRUD, 02: Priority, 03: Recurrence, 04: Reminders. Verify the current tree before building on it.
 
-2. **Phase 2 - Core Features**
-   - 03: Recurring Todos
-   - 04: Reminders & Notifications
-   - 05: Subtasks & Progress
+2. **Core extension** — 05: Subtasks and 06: Tags. Both depend on 01 and touch shared database/UI files; coordinate ownership or implement serially.
 
-3. **Phase 3 - Organization**
-   - 06: Tag System
-   - 08: Search & Filtering
+3. **Dependent productivity features** — 07: Templates (after 05); 08: Search & Filtering (after 05 and 06); 09: Export & Import (after 05 and 06).
 
-4. **Phase 4 - Productivity**
-   - 07: Template System
-   - 09: Export & Import
-   - 10: Calendar View
+4. **Calendar and auth acceptance** — 10: Calendar (after 01–02 and session availability); verify PRP 11 authentication acceptance flows. The auth/session foundation exists, but do not assume the PRP's full test criteria have passed.
 
-5. **Phase 5 - Infrastructure** (can be developed in parallel or last)
-   - 11: Authentication (WebAuthn)
+See [AI-HANDOFF-05-11.md](AI-HANDOFF-05-11.md) for feature-level cautions and documentation conflicts.
 
 ## 🛠️ Technical Stack Reference
 
@@ -200,6 +193,6 @@ When adding new PRPs:
 
 ---
 
-**Last Updated**: November 11, 2025
+**Last Updated**: November 13, 2026
 **Total PRPs**: 11
 **Total Features Documented**: 10 core application features + 1 infrastructure feature

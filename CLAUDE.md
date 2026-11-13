@@ -1,10 +1,8 @@
 # Todo App - Claude Code Instructions
 
-## ⚠️ Current Repository State
+## Repository State
 
-This repository currently contains **planning and reference documentation only** — `README.md`, `USER_GUIDE.md`, `EVALUATION.md`, `PRPs/*.md`, and `.github/copilot-instructions.md` describe the **target implementation** of a Todo App. The actual Next.js source code (`app/`, `lib/`, `middleware.ts`, `package.json`, `tests/`, etc.) does not exist in this repo yet.
-
-Everything below describes the architecture and conventions the app **must follow once implemented**. When asked to build or extend a feature, scaffold the project structure described here rather than assuming it already exists — check with `ls`/`find` first.
+The repository now includes a runnable Next.js app for Todo CRUD, priority, recurring todos, reminders, and WebAuthn sessions. PRPs 05–10 remain feature specifications until their source and tests are implemented. Keep feature status aligned with the actual code rather than treating the user guide's checklists as proof of implementation.
 
 ## Architecture Overview
 
